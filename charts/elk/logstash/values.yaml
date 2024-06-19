@@ -40,7 +40,6 @@ extraEnvs:
 # Allows you to load environment variables from kubernetes secret or config map
 envFrom: []
 
-
 # Add sensitive data to k8s secrets
 secrets: []
 
@@ -110,26 +109,18 @@ persistence:
 
 extraVolumes:
   []
-  # - name: extras
-  #   emptyDir: {}
+
 
 extraVolumeMounts:
   []
-  # - name: extras
-  #   mountPath: /usr/share/extras
-  #   readOnly: true
 
 extraContainers:
   []
-  # - name: do-something
-  #   image: busybox
-  #   command: ['do', 'something']
+
 
 extraInitContainers:
   []
-  # - name: do-something
-  #   image: busybox
-  #   command: ['do', 'something']
+
 
 # This is the PriorityClass settings as defined in
 # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
@@ -184,21 +175,6 @@ securityContext:
 
 # How long to wait for logstash to stop gracefully
 terminationGracePeriod: 120
-
-# Probes
-# Default probes are using `httpGet` which requires that `http.host: 0.0.0.0` is part of
-# `logstash.yml`. If needed probes can be disabled or overridden using the following syntaxes:
-#
-# disable livenessProbe
-# livenessProbe: null
-#
-# replace httpGet default readinessProbe by some exec probe
-# readinessProbe:
-#   httpGet: null
-#   exec:
-#     command:
-#       - curl
-#      - localhost:9600
 
 livenessProbe:
   httpGet:
