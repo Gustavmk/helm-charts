@@ -23,7 +23,7 @@ logstashPipeline:
  
       }
     }
-    output { elasticsearch { hosts => "http://elasticsearch-master:9200" } }
+    output { elasticsearch { hosts => "https://elasticsearch-master:9200" } }
     
 
 # Allows you to add any pattern files in your custom pattern dir
@@ -277,8 +277,7 @@ service:
 
 ingress:
   enabled: false
-  annotations:
-    {}
+  annotations: {}
     # kubernetes.io/tls-acme: "true"
   className: "nginx"
   pathtype: ImplementationSpecific

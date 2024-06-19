@@ -1,0 +1,45 @@
+controller:
+  replicaCount: 3
+  service:
+    type: LoadBalancer
+    annotations: 
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+      service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
+  metrics:
+    enabled: true
+  podAnnotations:
+    prometheus.io/port: "10254"
+    prometheus.io/scrape: "true"
+config: 
+  proxy-buffer-size: 16k
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 15
+  targetCPU: 10
+
+resources:
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+  requests:
+    cpu: "50m"
+    memory: "100Mi"
+
+#extraArgs:
+  #default-ssl-certificate: "default/tls-wildcard-microvix"
+  #ingress-class: nginx
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    annotations:
+      app: "nginx-ingress"
+    labels:
+      app: "nginx-ingress"
