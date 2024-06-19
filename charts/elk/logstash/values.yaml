@@ -2,74 +2,55 @@
 replicas: 1
 
 # Allows you to add any config files in /usr/share/logstash/config/
-# such as logstash.yml and log4j2.properties
-#
-# Note that when overriding logstash.yml, `http.host: 0.0.0.0` should always be included
-# to make default probes work.
-logstashConfig: {}
-#  logstash.yml: |
-#    key:
-#      nestedkey: value
-#  log4j2.properties: |
-#    key = value
+logstashConfig:
+  logstash.yml: |
+    http.host: 0.0.0.0
+    xpack.monitoring.enabled: false
 
 # Allows you to add any pipeline files in /usr/share/logstash/pipeline/
-### ***warn*** there is a hardcoded logstash.conf in the image, override it first
 logstashPipeline:
   logstash.conf: |
-    input {
-      beats {
-        port => 5044
- 
+    input { beats { port => 5044 } }
+    output { 
+      elasticsearch { 
+        hosts => ['https://elasticsearch-master:9200']
+        user => '${ELASTICSEARCH_USERNAME}'
+        password => '${ELASTICSEARCH_PASSWORD}'
+        cacert => '/usr/share/logstash/config/certs/ca.crt'
+        index => 'logstash'
       }
     }
-    output { elasticsearch { hosts => "https://elasticsearch-master:9200" } }
-    
 
 # Allows you to add any pattern files in your custom pattern dir
 logstashPatternDir: "/usr/share/logstash/patterns/"
 logstashPattern: {}
-#    pattern.conf: |
-#      DPKG_VERSION [-+~<>\.0-9a-zA-Z]+
 
-# Extra environment variables to append to this nodeGroup
-# This will be appended to the current 'env:' key. You can use any of the kubernetes env
-# syntax here
-extraEnvs: []
-#  - name: MY_ENVIRONMENT_VAR
-#    value: the_value_goes_here
+extraEnvs:
+  - name: "ELASTICSEARCH_USERNAME"
+    valueFrom:
+      secretKeyRef:
+        name: elasticsearch-master-credentials
+        key: username
+  - name: "ELASTICSEARCH_PASSWORD"
+    valueFrom:
+      secretKeyRef:
+        name: elasticsearch-master-credentials
+        key: password
 
 # Allows you to load environment variables from kubernetes secret or config map
 envFrom: []
-# - secretRef:
-#     name: env-secret
-# - configMapRef:
-#     name: config-map
+
 
 # Add sensitive data to k8s secrets
 secrets: []
-#  - name: "env"
-#    value:
-#      ELASTICSEARCH_PASSWORD: "LS1CRUdJTiBgUFJJVkFURSB"
-#      api_key: ui2CsdUadTiBasRJRkl9tvNnw
-#  - name: "tls"
-#    value:
-#      ca.crt: |
-#        LS0tLS1CRUdJT0K
-#        LS0tLS1CRUdJT0K
-#        LS0tLS1CRUdJT0K
-#        LS0tLS1CRUdJT0K
-#      cert.crt: "LS0tLS1CRUdJTiBlRJRklDQVRFLS0tLS0K"
-#      cert.key.filepath: "secrets.crt" # The path to file should be relative to the `values.yaml` file.
+
 
 # A list of secrets and their paths to mount inside the pod
-secretMounts: []
+secretMounts:
+  - name: elasticsearch-master-certs
+    secretName: elasticsearch-master-certs
+    path: /usr/share/logstash/config/certs
 
-hostAliases: []
-#- ip: "127.0.0.1"
-#  hostnames:
-#  - "foo.local"
-#  - "bar.local"
 
 image: "docker.elastic.co/logstash/logstash"
 imageTag: "8.5.1"
@@ -103,9 +84,7 @@ rbac:
   serviceAccountName: ""
   annotations:
     {}
-    #annotation1: "value1"
-    #annotation2: "value2"
-    #annotation3: "value3"
+
 
 podSecurityPolicy:
   create: false
