@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  dotnet-boilerplate-api:
+  - apiVersion: v2
+    appVersion: sha-a6c2b2b25af9bdfee6e5cd35f3eebc40cee9dcd0
+    created: "2026-09-08T13:57:00.292715795Z"
+    description: Dotnet Boilerplate API Helm Chart for Kubernetes
+    digest: 43efca3c47a08a0459cb71bc6fc43ad49caebe4e7c1379dea62421384fea91a4
+    name: dotnet-boilerplate-api
+    type: application
+    urls:
+    - https://github.com/Gustavmk/helm-charts/releases/download/dotnet-boilerplate-api-1.0.1/dotnet-boilerplate-api-1.0.1.tgz
+    version: 1.0.1
+generated: "2026-09-08T13:57:00.292727147Z"
