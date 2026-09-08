@@ -1,3 +1,10 @@
+{{- if .Values.postgresql.enabled }}
+PostgreSQL is deployed in-cluster as a StatefulSet. Reachable at:
+    {{ include "dotnet-boilerplate-api.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}
+Set the app connection string (secret.stringData.ConnectionStrings__DefaultConnection) to:
+    Host={{ include "dotnet-boilerplate-api.postgresql.fullname" . }};Port={{ .Values.postgresql.service.port }};Database={{ .Values.postgresql.auth.database }};Username={{ .Values.postgresql.auth.username }};Password=<password>
+
+{{ end -}}
 1. Get the application URL by running these commands:
 {{- if .Values.httpRoute.enabled }}
 {{- if .Values.httpRoute.hostnames }}

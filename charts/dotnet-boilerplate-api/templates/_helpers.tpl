@@ -58,6 +58,42 @@ Name of the Secret holding sensitive environment variables.
 {{- end }}
 
 {{/*
+Fully qualified name of the bundled PostgreSQL resources.
+*/}}
+{{- define "dotnet-boilerplate-api.postgresql.fullname" -}}
+{{- printf "%s-postgresql" (include "dotnet-boilerplate-api.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+PostgreSQL selector labels.
+*/}}
+{{- define "dotnet-boilerplate-api.postgresql.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "dotnet-boilerplate-api.name" . }}-postgresql
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component: database
+{{- end }}
+
+{{/*
+PostgreSQL common labels.
+*/}}
+{{- define "dotnet-boilerplate-api.postgresql.labels" -}}
+helm.sh/chart: {{ include "dotnet-boilerplate-api.chart" . }}
+{{ include "dotnet-boilerplate-api.postgresql.selectorLabels" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Name of the Secret holding the PostgreSQL password.
+*/}}
+{{- define "dotnet-boilerplate-api.postgresql.secretName" -}}
+{{- if .Values.postgresql.auth.existingSecret }}
+{{- .Values.postgresql.auth.existingSecret }}
+{{- else }}
+{{- include "dotnet-boilerplate-api.postgresql.fullname" . }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "dotnet-boilerplate-api.serviceAccountName" -}}

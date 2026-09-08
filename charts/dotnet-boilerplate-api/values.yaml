@@ -11,7 +11,7 @@ image:
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  # tag: "local"
+  tag: "sha-a6c2b2b25af9bdfee6e5cd35f3eebc40cee9dcd0"
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -81,8 +81,8 @@ secret:
   # Name of the Secret. Defaults to the chart fullname when empty.
   name: ""
   # Rendered into the Secret's stringData (plain text in values, encoded by k8s).
-  # DB host "db-server" comes from docker-compose.yml (the postgres service);
-  # in-cluster this should point at your Postgres Service name.
+  # When the bundled `postgresql` StatefulSet is enabled, point Host at its
+  # Service: "<release-name>-dotnet-boilerplate-api-postgresql".
   stringData:
     ConnectionStrings__DefaultConnection: "Host=SERVER;Port=5432;Database=DATABASENAME;Username=USER;Password=YOUR PASSWORD"
   # Alternatively, pre-encoded base64 values.
@@ -94,6 +94,50 @@ secret:
 # envFrom:
 #   - configMapRef:
 #       name: boilerplate-api-extra
+
+# Bundled PostgreSQL database, deployed as a single-replica StatefulSet.
+# Meant for dev/test and small self-contained deployments. For production use a
+# managed database (or a dedicated operator) and set `enabled: false`.
+postgresql:
+  enabled: false
+  image:
+    repository: postgres
+    tag: "16-alpine"
+    pullPolicy: IfNotPresent
+  auth:
+    username: app_user
+    database: HeroDb
+    # Password for the user above. Required unless `existingSecret` is set.
+    password: "changeme"
+    # Reference an existing Secret instead of letting the chart create one.
+    existingSecret: ""
+    secretKeys:
+      passwordKey: postgres-password
+  service:
+    port: 5432
+  persistence:
+    enabled: true
+    # "-" forces an empty storageClassName; "" (default) uses the cluster default.
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+    annotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 250m
+    #   memory: 256Mi
+  podSecurityContext:
+    fsGroup: 999
+  securityContext:
+    runAsUser: 999
+    runAsNonRoot: true
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
