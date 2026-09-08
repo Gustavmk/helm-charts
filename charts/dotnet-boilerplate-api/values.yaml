@@ -11,7 +11,7 @@ image:
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "sha-a6c2b2b25af9bdfee6e5cd35f3eebc40cee9dcd0"
+  tag: "sha-5433643b46a75e1756a1d4c3cd7fa24e0829c158"
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -207,17 +207,17 @@ resources: {}
   #   memory: 128Mi
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-# The API has no dedicated /health endpoint; the always-on Swagger document is
-# used as a cheap liveness/readiness signal (see Boilerplate.Api SwaggerSetup).
+# /health/live is a dummy check (process is up); /health/ready validates every
+# dependency (database, ...). See Boilerplate.Api HealthCheckSetup.
 livenessProbe:
   httpGet:
-    path: /swagger/v1/swagger.json
+    path: /health/live
     port: http
   initialDelaySeconds: 15
   periodSeconds: 20
 readinessProbe:
   httpGet:
-    path: /swagger/v1/swagger.json
+    path: /health/ready
     port: http
   initialDelaySeconds: 10
   periodSeconds: 10
